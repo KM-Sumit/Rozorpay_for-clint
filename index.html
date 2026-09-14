@@ -1,180 +1,947 @@
-from pathlib import Path
-import zipfile, shutil, re, os
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-base = Path("/mnt/data/hostinggeer-razorpay-netlify")
-if base.exists():
-    shutil.rmtree(base)
-(base / "netlify" / "functions").mkdir(parents=True)
+  <title>Hostinggeer | Premium Hosting Plans</title>
 
-html = Path("/mnt/data/py_razorpay_integrated.html").read_text(encoding="utf-8")
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-# Use Netlify Functions as same-site backend.
-html = html.replace(
-    'const BACKEND_URL = "https://YOUR-BACKEND-URL.com";',
-    'const BACKEND_URL = "";'
-)
-html = html.replace(
-    'if (BACKEND_URL.includes("YOUR-BACKEND-URL")) {\n        alert("Payment ke liye backend URL configure karna zaroori hai. BACKEND_URL me apna backend URL daalein.");\n        return;\n      }\n\n',
-    ''
-)
-html = html.replace(
-    'fetch(`${BACKEND_URL}/create-order`',
-    'fetch("/.netlify/functions/create-order"'
-)
-html = html.replace(
-    'fetch(`${BACKEND_URL}/verify-payment`',
-    'fetch("/.netlify/functions/verify-payment"'
-)
-html = html.replace(
-    'Replace BACKEND_URL with your deployed backend URL.\n     * The backend must expose:',
-    'This version uses Netlify Functions as the backend.\n     * Configure Razorpay credentials in Netlify environment variables.\n     * The backend exposes:'
-)
-# Keep only public key ID; user must rotate exposed credentials.
-html = html.replace(
-    'const RAZORPAY_KEY_ID = "rzp_live_Tbv60mhXgOfSX5";',
-    'const RAZORPAY_KEY_ID = "rzp_live_Tbv60mhXgOfSX5";'
-)
-(base / "index.html").write_text(html, encoding="utf-8")
-
-create_order = r'''const Razorpay = require("razorpay");
-
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
-  }
-
-  try {
-    const body = JSON.parse(event.body || "{}");
-    const amount = Number(body.amount);
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Invalid amount" }) };
+  <style>
+    :root {
+      --bg: #070b16;
+      --card: #111827;
+      --card-light: #172033;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --border: rgba(148, 163, 184, 0.16);
+      --success: #22c55e;
     }
 
-    const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET
-    });
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    const order = await razorpay.orders.create({
-      amount: Math.round(amount * 100),
-      currency: "INR",
-      receipt: `hg_${Date.now()}`,
-      notes: {
-        plan: String(body.plan || "").slice(0, 100),
-        customer_name: String(body.customer?.name || "").slice(0, 100),
-        customer_email: String(body.customer?.email || "").slice(0, 100)
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 35%),
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: auto;
+    }
+
+    nav {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #818cf8, #4f46e5);
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .nav-btn {
+      padding: 11px 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: white !important;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 90px 0 60px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 999px;
+      color: #a5b4fc;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 22px;
+    }
+
+    .tag span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success);
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: auto;
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -3px;
+      font-weight: 850;
+    }
+
+    h1 strong {
+      background: linear-gradient(135deg, #a5b4fc, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      max-width: 620px;
+      margin: 24px auto 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .trust-row {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .trust-row div {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .check {
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    .pricing-header {
+      text-align: center;
+      margin: 35px 0 28px;
+    }
+
+    .pricing-header h2 {
+      font-size: 32px;
+      letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+
+    .pricing-header p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: stretch;
+      padding-bottom: 80px;
+    }
+
+    .plan {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 30px 25px 25px;
+      background: linear-gradient(180deg, rgba(23, 32, 51, 0.96), rgba(17, 24, 39, 0.96));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      transition: 0.25s ease;
+      overflow: hidden;
+    }
+
+    .plan:hover {
+      transform: translateY(-7px);
+      border-color: rgba(99, 102, 241, 0.6);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .plan.featured {
+      border: 1px solid #6366f1;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.12),
+                  0 20px 60px rgba(79, 70, 229, 0.12);
+    }
+
+    .popular {
+      position: absolute;
+      top: 0;
+      right: 22px;
+      padding: 7px 12px;
+      border-radius: 0 0 10px 10px;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .plan-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      background: rgba(99, 102, 241, 0.13);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      font-size: 23px;
+      margin-bottom: 20px;
+    }
+
+    .plan h3 {
+      font-size: 21px;
+      margin-bottom: 8px;
+    }
+
+    .plan-description {
+      min-height: 43px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .price {
+      margin: 24px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .price .currency {
+      font-size: 20px;
+      color: #cbd5e1;
+    }
+
+    .price .amount {
+      font-size: 43px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -2px;
+    }
+
+    .price .period {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .buy-btn {
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 750;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      transition: 0.2s ease;
+      margin-bottom: 25px;
+    }
+
+    .buy-btn:hover {
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      transform: translateY(-2px);
+    }
+
+    .buy-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    .features-title {
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 750;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .features {
+      list-style: none;
+      display: grid;
+      gap: 13px;
+    }
+
+    .features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .features li::before {
+      content: "✓";
+      color: var(--success);
+      font-weight: 800;
+    }
+
+    .bottom-note {
+      text-align: center;
+      padding: 22px 0 45px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(460px, 100%);
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .modal-head h3 {
+      font-size: 21px;
+    }
+
+    .close-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .selected-plan {
+      padding: 15px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 13px;
+      margin-bottom: 18px;
+    }
+
+    .selected-plan small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .selected-plan strong {
+      font-size: 22px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: #cbd5e1;
+      margin-bottom: 7px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #0b1220;
+      color: white;
+      font-size: 14px;
+    }
+
+    .field input:focus {
+      border-color: #6366f1;
+    }
+
+    .continue-btn {
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-weight: 750;
+      padding: 14px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      margin-top: 5px;
+    }
+
+    .secure-note {
+      text-align: center;
+      color: #64748b;
+      font-size: 11px;
+      margin-top: 15px;
+    }
+
+    .success-box {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      font-size: 13px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    @media (max-width: 950px) {
+      .plans {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .plan:last-child {
+        grid-column: span 2;
+        max-width: 50%;
+        width: 100%;
+        margin: auto;
+      }
+    }
+
+    @media (max-width: 650px) {
+      nav {
+        height: 65px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 60px 0 35px;
+      }
+
+      h1 {
+        letter-spacing: -1.8px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .plans {
+        grid-template-columns: 1fr;
+      }
+
+      .plan:last-child {
+        grid-column: auto;
+        max-width: none;
+      }
+
+      .pricing-header h2 {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <nav>
+      <a href="#" class="logo">
+        <span class="logo-icon">☁</span>
+        Hostinggeer
+      </a>
+
+      <div class="nav-links">
+        <a href="#plans">Pricing</a>
+        <a href="#features">Features</a>
+        <a href="#contact">Support</a>
+        <a href="#plans" class="nav-btn">Get Started</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="tag">
+        <span></span>
+        Reliable hosting for growing businesses
+      </div>
+
+      <h1>
+        Powerful hosting.<br />
+        <strong>Simple pricing.</strong>
+      </h1>
+
+      <p>
+        Launch your website with fast, secure and reliable hosting.
+        Choose a plan that fits your business and scale whenever you need.
+      </p>
+
+      <div class="trust-row">
+        <div><span class="check">✓</span> Free database</div>
+        <div><span class="check">✓</span> Free storage</div>
+        <div><span class="check">✓</span> 99.9% uptime target</div>
+        <div><span class="check">✓</span> 24/7 support</div>
+      </div>
+    </section>
+
+    <section id="plans">
+      <div class="pricing-header">
+        <h2>Choose your hosting plan</h2>
+        <p>Flexible plans for personal projects, startups and businesses.</p>
+      </div>
+
+      <div class="plans">
+
+        <article class="plan">
+          <div class="plan-icon">🚀</div>
+          <h3>Starter</h3>
+          <p class="plan-description">
+            Perfect for personal websites and small projects.
+          </p>
+
+          <div class="price">
+            <span class="currency">₹</span>
+            <span class="amount">500</span>
+            <span class="period">/month</span>
+          </div>
+
+          <button
+            class="buy-btn"
+            onclick="openPaymentModal('Starter Hosting Plan', 500)"
+          >
+            Buy Starter
+          </button>
+
+          <div class="features-title">Plan includes</div>
+          <ul class="features">
+            <li>1 website</li>
+            <li>5 GB SSD storage</li>
+            <li>Free database</li>
+            <li>Free SSL certificate</li>
+            <li>Basic support</li>
+          </ul>
+        </article>
+
+        <article class="plan featured">
+          <div class="popular">MOST POPULAR</div>
+          <div class="plan-icon">⚡</div>
+          <h3>Professional</h3>
+          <p class="plan-description">
+            Built for creators, freelancers and growing websites.
+          </p>
+
+          <div class="price">
+            <span class="currency">₹</span>
+            <span class="amount">1,500</span>
+            <span class="period">/month</span>
+          </div>
+
+          <button
+            class="buy-btn"
+            onclick="openPaymentModal('Professional Hosting Plan', 1500)"
+          >
+            Buy Professional
+          </button>
+
+          <div class="features-title">Plan includes</div>
+          <ul class="features">
+            <li>5 websites</li>
+            <li>25 GB SSD storage</li>
+            <li>Free database</li>
+            <li>Free SSL certificate</li>
+            <li>Daily backup</li>
+            <li>Priority support</li>
+          </ul>
+        </article>
+
+        <article class="plan">
+          <div class="plan-icon">🏢</div>
+          <h3>Business</h3>
+          <p class="plan-description">
+            High-performance hosting for serious business workloads.
+          </p>
+
+          <div class="price">
+            <span class="currency">₹</span>
+            <span class="amount">5,000</span>
+            <span class="period">/month</span>
+          </div>
+
+          <button
+            class="buy-btn"
+            onclick="openPaymentModal('Business Hosting Plan', 5000)"
+          >
+            Buy Business
+          </button>
+
+          <div class="features-title">Plan includes</div>
+          <ul class="features">
+            <li>Unlimited websites</li>
+            <li>100 GB SSD storage</li>
+            <li>Free database</li>
+            <li>Free SSL certificate</li>
+            <li>Advanced backup</li>
+            <li>Priority support</li>
+          </ul>
+        </article>
+
+        <article class="plan">
+          <div class="plan-icon">💎</div>
+          <h3>Enterprise</h3>
+          <p class="plan-description">
+            Dedicated resources and premium support for large projects.
+          </p>
+
+          <div class="price">
+            <span class="currency">₹</span>
+            <span class="amount">9,000</span>
+            <span class="period">/month</span>
+          </div>
+
+          <button
+            class="buy-btn"
+            onclick="openPaymentModal('Enterprise Hosting Plan', 9000)"
+          >
+            Buy Enterprise
+          </button>
+
+          <div class="features-title">Plan includes</div>
+          <ul class="features">
+            <li>Unlimited websites</li>
+            <li>250 GB SSD storage</li>
+            <li>Free database</li>
+            <li>Free SSL certificate</li>
+            <li>Dedicated resources</li>
+            <li>Premium support</li>
+          </ul>
+        </article>
+
+        <article class="plan">
+          <div class="plan-icon">🌐</div>
+          <h3>Scale</h3>
+          <p class="plan-description">
+            Advanced infrastructure for high traffic applications.
+          </p>
+
+          <div class="price">
+            <span class="currency">₹</span>
+            <span class="amount">7,000</span>
+            <span class="period">/month</span>
+          </div>
+
+          <button
+            class="buy-btn"
+            onclick="openPaymentModal('Scale Hosting Plan', 7000)"
+          >
+            Buy Scale
+          </button>
+
+          <div class="features-title">Plan includes</div>
+          <ul class="features">
+            <li>Unlimited websites</li>
+            <li>150 GB SSD storage</li>
+            <li>Free database</li>
+            <li>Free SSL certificate</li>
+            <li>High traffic support</li>
+            <li>Priority support</li>
+          </ul>
+        </article>
+
+        <article class="plan">
+          <div class="plan-icon">🔥</div>
+          <h3>Ultimate</h3>
+          <p class="plan-description">
+            Maximum power for demanding production applications.
+          </p>
+
+          <div class="price">
+            <span class="currency">₹</span>
+            <span class="amount">12,000</span>
+            <span class="period">/month</span>
+          </div>
+
+          <button
+            class="buy-btn"
+            onclick="openPaymentModal('Ultimate Hosting Plan', 12000)"
+          >
+            Buy Ultimate
+          </button>
+
+          <div class="features-title">Plan includes</div>
+          <ul class="features">
+            <li>Unlimited websites</li>
+            <li>500 GB SSD storage</li>
+            <li>Free database</li>
+            <li>Free SSL certificate</li>
+            <li>Dedicated infrastructure</li>
+            <li>24/7 premium support</li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+
+    <div class="bottom-note" id="contact">
+      © 2026 Hostinggeer. All rights reserved.<br />
+      Payments are processed securely through Razorpay.
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Complete your purchase</h3>
+        <button class="close-btn" onclick="closePaymentModal()">×</button>
+      </div>
+
+      <div class="selected-plan">
+        <small>Selected plan</small>
+        <strong id="selectedPlanName">Starter Plan</strong>
+        <div id="selectedPlanPrice">₹500/month</div>
+      </div>
+
+      <form id="paymentForm">
+        <div class="field">
+          <label for="customerName">Full Name</label>
+          <input
+            type="text"
+            id="customerName"
+            placeholder="Enter your full name"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="customerEmail">Email Address</label>
+          <input
+            type="email"
+            id="customerEmail"
+            placeholder="you@example.com"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="customerPhone">Phone Number</label>
+          <input
+            type="tel"
+            id="customerPhone"
+            placeholder="10-digit mobile number"
+            pattern="[0-9]{10}"
+            required
+          />
+        </div>
+
+        <button type="submit" class="continue-btn" id="continueBtn">
+          Continue to Payment
+        </button>
+      </form>
+
+      <div class="secure-note">
+        You will be redirected to Razorpay's secure checkout.
+      </div>
+
+      <div class="success-box" id="successBox"></div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      IMPORTANT:
+      Replace this with your NEW Razorpay LIVE PUBLIC KEY ID.
+
+      Example:
+      rzp_live_xxxxxxxxxxxxxx
+
+      Never put Razorpay Secret Key here.
+    */
+    const RAZORPAY_KEY_ID = "rzp_live_NEW_PUBLIC_KEY_ID";
+
+    let selectedPlan = {
+      name: "",
+      amount: 0
+    };
+
+    function openPaymentModal(planName, amount) {
+      selectedPlan.name = planName;
+      selectedPlan.amount = amount;
+
+      document.getElementById("selectedPlanName").textContent = planName;
+      document.getElementById("selectedPlanPrice").textContent =
+        "₹" + amount.toLocaleString("en-IN") + "/month";
+
+      document.getElementById("paymentModal").classList.add("active");
+      document.getElementById("successBox").style.display = "none";
+    }
+
+    function closePaymentModal() {
+      document.getElementById("paymentModal").classList.remove("active");
+    }
+
+    document.getElementById("paymentModal").addEventListener("click", function(e) {
+      if (e.target === this) {
+        closePaymentModal();
       }
     });
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: order.id,
-        amount: order.amount,
-        currency: order.currency
-      })
-    };
-  } catch (error) {
-    console.error("Create order error:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Unable to create Razorpay order" })
-    };
-  }
-};
-'''
-(base / "netlify" / "functions" / "create-order.js").write_text(create_order, encoding="utf-8")
+    document.getElementById("paymentForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-verify_payment = r'''const crypto = require("crypto");
+      if (
+        !RAZORPAY_KEY_ID ||
+        RAZORPAY_KEY_ID.includes("NEW_PUBLIC_KEY_ID")
+      ) {
+        alert("Please add your Razorpay Live Public Key ID in the HTML code.");
+        return;
+      }
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
-  }
+      const name = document.getElementById("customerName").value.trim();
+      const email = document.getElementById("customerEmail").value.trim();
+      const phone = document.getElementById("customerPhone").value.trim();
+      const continueBtn = document.getElementById("continueBtn");
 
-  try {
-    const body = JSON.parse(event.body || "");
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+      continueBtn.disabled = true;
+      continueBtn.textContent = "Opening Razorpay...";
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return { statusCode: 400, body: JSON.stringify({ success: false, error: "Missing payment fields" }) };
-    }
+      const options = {
+        key: RAZORPAY_KEY_ID,
 
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
+        // Razorpay amount is in paise
+        amount: selectedPlan.amount * 100,
 
-    const valid =
-      expectedSignature.length === razorpay_signature.length &&
-      crypto.timingSafeEqual(
-        Buffer.from(expectedSignature),
-        Buffer.from(razorpay_signature)
-      );
+        currency: "INR",
+        name: "Hostinggeer",
+        description: selectedPlan.name,
 
-    if (!valid) {
-      return { statusCode: 400, body: JSON.stringify({ success: false, error: "Invalid signature" }) };
-    }
+        prefill: {
+          name: name,
+          email: email,
+          contact: phone
+        },
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ success: true, payment_id: razorpay_payment_id })
-    };
-  } catch (error) {
-    console.error("Verify payment error:", error);
-    return { statusCode: 500, body: JSON.stringify({ success: false, error: "Verification failed" }) };
-  }
-};
-'''
-(base / "netlify" / "functions" / "verify-payment.js").write_text(verify_payment, encoding="utf-8")
+        notes: {
+          plan: selectedPlan.name,
+          customer_name: name,
+          demo: "true"
+        },
 
-package_json = '''{
-  "name": "hostinggeer-razorpay-netlify",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "razorpay": "^2.9.6"
-  }
-}
-'''
-(base / "package.json").write_text(package_json, encoding="utf-8")
+        theme: {
+          color: "#6366f1"
+        },
 
-netlify_toml = '''[build]
-  publish = "."
-  functions = "netlify/functions"
+        handler: function(response) {
+          const successBox = document.getElementById("successBox");
 
-[functions]
-  node_bundler = "esbuild"
-'''
-(base / "netlify.toml").write_text(netlify_toml, encoding="utf-8")
+          successBox.style.display = "block";
+          successBox.innerHTML = `
+            <strong>Payment Completed</strong><br><br>
+            Payment ID: ${response.razorpay_payment_id || "Received"}<br>
+            Plan: ${selectedPlan.name}<br>
+            Amount: ₹${selectedPlan.amount.toLocaleString("en-IN")}<br><br>
+            <small>
+              Note: This is a frontend demo. Server-side verification
+              should be added before production use.
+            </small>
+          `;
 
-readme = '''# HostingGeer + Razorpay Live Integration
+          continueBtn.disabled = false;
+          continueBtn.textContent = "Continue to Payment";
 
-## Netlify setup
+          console.log("Razorpay payment response:", response);
+        },
 
-1. Deploy this folder/repository to Netlify.
-2. In Netlify: Site configuration -> Environment variables, add:
-   - `RAZORPAY_KEY_ID` = your NEW live Key ID
-   - `RAZORPAY_KEY_SECRET` = your live Key Secret
-3. Trigger a new deploy.
-4. Do not put `RAZORPAY_KEY_SECRET` in `index.html` or GitHub.
+        modal: {
+          ondismiss: function() {
+            continueBtn.disabled = false;
+            continueBtn.textContent = "Continue to Payment";
+          }
+        }
+      };
 
-The frontend uses `/.netlify/functions/create-order` and
-`/.netlify/functions/verify-payment`.
+      const razorpay = new Razorpay(options);
 
-IMPORTANT: The live credential previously shared in chat should be revoked/rotated
-before going live.
-'''
-(base / "README.md").write_text(readme, encoding="utf-8")
+      razorpay.on("payment.failed", function(response) {
+        alert(
+          "Payment failed.\n\n" +
+          (response.error.description || "Please try again.")
+        );
 
-zip_path = Path("/mnt/data/hostinggeer-razorpay-netlify.zip")
-with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
-    for p in base.rglob("*"):
-        if p.is_file():
-            z.write(p, p.relative_to(base))
+        console.error("Payment failed:", response.error);
 
-print(f"Created complete deployable project: {zip_path}")
-print("Included index.html, Netlify Functions for order creation and signature verification, package.json, netlify.toml, and README.")
+        continueBtn.disabled = false;
+        continueBtn.textContent = "Continue to Payment";
+      });
+
+      razorpay.open();
+    });
+  </script>
+
+</body>
+</html>

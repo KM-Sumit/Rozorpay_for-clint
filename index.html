@@ -1,1078 +1,180 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CloudNest — Premium Cloud Hosting</title>
-  <meta name="description" content="Fast, secure and affordable cloud server hosting plans." />
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #070b16;
-      --card: #101727;
-      --card-light: #151e31;
-      --border: rgba(255, 255, 255, 0.09);
-      --text: #f5f7ff;
-      --muted: #9ba7bd;
-      --primary: #6d5dfc;
-      --secondary: #21d4fd;
-      --green: #36e0a0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system,
-        BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(109, 93, 252, 0.16), transparent 32%),
-        radial-gradient(circle at 90% 10%, rgba(33, 212, 253, 0.10), transparent 28%),
-        var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
-
-    .container {
-      width: min(1180px, calc(100% - 40px));
-      margin: auto;
-    }
-
-    /* Navbar */
-    nav {
-      height: 78px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-      z-index: 10;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 21px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    .logo-icon {
-      width: 37px;
-      height: 37px;
-      border-radius: 11px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      box-shadow: 0 0 25px rgba(109, 93, 252, 0.35);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .nav-links a:hover {
-      color: white;
-    }
-
-    .nav-btn {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
-      padding: 9px 17px;
-      border-radius: 9px;
-      color: white;
-    }
-
-    /* Hero */
-    .hero {
-      text-align: center;
-      padding: 85px 0 65px;
-      max-width: 850px;
-      margin: auto;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 13px;
-      border-radius: 50px;
-      background: rgba(109, 93, 252, 0.11);
-      border: 1px solid rgba(109, 93, 252, 0.25);
-      color: #bdb7ff;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 24px;
-    }
-
-    .pulse {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 12px var(--green);
-    }
-
-    .hero h1 {
-      font-size: clamp(36px, 6vw, 66px);
-      line-height: 1.08;
-      letter-spacing: -2.8px;
-      font-weight: 850;
-      margin-bottom: 22px;
-    }
-
-    .gradient-text {
-      background: linear-gradient(100deg, #8d82ff, #46dfff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 17px;
-      max-width: 610px;
-      margin: auto;
-    }
-
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 38px;
-      margin-top: 35px;
-      flex-wrap: wrap;
-    }
-
-    .hero-stat strong {
-      display: block;
-      font-size: 20px;
-    }
-
-    .hero-stat span {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Pricing */
-    .pricing-section {
-      padding: 20px 0 90px;
-    }
-
-    .section-heading {
-      text-align: center;
-      margin-bottom: 38px;
-    }
-
-    .section-heading h2 {
-      font-size: 30px;
-      letter-spacing: -1px;
-      margin-bottom: 8px;
-    }
-
-    .section-heading p {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .billing-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 35px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .toggle {
-      width: 48px;
-      height: 25px;
-      border-radius: 20px;
-      background: var(--primary);
-      padding: 3px;
-      border: none;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .toggle span {
-      display: block;
-      width: 19px;
-      height: 19px;
-      border-radius: 50%;
-      background: white;
-    }
-
-    .save-badge {
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .pricing-card {
-      position: relative;
-      background: linear-gradient(160deg, rgba(21, 30, 49, 0.95), rgba(12, 18, 31, 0.98));
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 27px;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
-    }
-
-    .pricing-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(109, 93, 252, 0.55);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    }
-
-    .pricing-card.featured {
-      border: 1px solid rgba(109, 93, 252, 0.7);
-      box-shadow: 0 0 35px rgba(109, 93, 252, 0.10);
-    }
-
-    .popular {
-      position: absolute;
-      top: -13px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(90deg, var(--primary), #8e6dfd);
-      border-radius: 30px;
-      padding: 5px 16px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.7px;
-      white-space: nowrap;
-    }
-
-    .plan-icon {
-      width: 43px;
-      height: 43px;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      background: rgba(109, 93, 252, 0.12);
-      font-size: 20px;
-      margin-bottom: 19px;
-    }
-
-    .pricing-card h3 {
-      font-size: 20px;
-      margin-bottom: 5px;
-    }
-
-    .plan-desc {
-      font-size: 12px;
-      color: var(--muted);
-      min-height: 40px;
-    }
-
-    .price {
-      margin: 22px 0 4px;
-      display: flex;
-      align-items: baseline;
-      gap: 3px;
-    }
-
-    .price strong {
-      font-size: 37px;
-      letter-spacing: -1.5px;
-    }
-
-    .price span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .setup {
-      font-size: 11px;
-      color: var(--green);
-      min-height: 19px;
-      margin-bottom: 22px;
-    }
-
-    .features {
-      list-style: none;
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
-      margin-bottom: 25px;
-      flex: 1;
-    }
-
-    .features li {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      font-size: 12px;
-      color: #d4daea;
-      margin-bottom: 13px;
-    }
-
-    .features li::before {
-      content: "✓";
-      color: var(--green);
-      font-weight: 800;
-    }
-
-    .buy-btn {
-      width: 100%;
-      border: 1px solid rgba(109, 93, 252, 0.45);
-      background: rgba(109, 93, 252, 0.09);
-      color: white;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      transition: 0.2s;
-    }
-
-    .buy-btn:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-
-    .featured .buy-btn {
-      background: linear-gradient(90deg, var(--primary), #8877ff);
-      border-color: transparent;
-    }
-
-    /* Trust section */
-    .trust {
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 28px 0;
-      margin-bottom: 75px;
-    }
-
-    .trust-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .trust-text {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .trust-items {
-      display: flex;
-      gap: 28px;
-      flex-wrap: wrap;
-      color: #c7d0e4;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    /* CTA */
-    .cta {
-      text-align: center;
-      padding: 65px 20px;
-      border: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(109,93,252,0.10), rgba(33,212,253,0.04));
-      border-radius: 22px;
-      margin-bottom: 75px;
-    }
-
-    .cta h2 {
-      font-size: 31px;
-      margin-bottom: 12px;
-    }
-
-    .cta p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 25px;
-    }
-
-    .cta-btn {
-      display: inline-block;
-      padding: 13px 25px;
-      border-radius: 10px;
-      background: white;
-      color: #101322;
-      font-weight: 800;
-      font-size: 13px;
-    }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 30px 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 22px;
-    }
-
-    .footer-links a:hover {
-      color: white;
-    }
-
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.72);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 100;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal {
-      background: #111a2c;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      width: min(440px, 100%);
-      padding: 28px;
-      position: relative;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 15px;
-      right: 18px;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 22px;
-    }
-
-    .modal h3 {
-      font-size: 21px;
-      margin-bottom: 5px;
-    }
-
-    .modal-subtitle {
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 22px;
-    }
-
-    .selected-plan {
-      background: rgba(109,93,252,0.12);
-      border: 1px solid rgba(109,93,252,0.25);
-      padding: 13px;
-      border-radius: 10px;
-      margin-bottom: 18px;
-      font-size: 13px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      color: #cbd4e6;
-      margin-bottom: 6px;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      background: #0a1020;
-      border: 1px solid var(--border);
-      color: white;
-      padding: 11px 12px;
-      border-radius: 9px;
-      outline: none;
-      font-size: 13px;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      border-color: var(--primary);
-    }
-
-    .submit-btn {
-      width: 100%;
-      margin-top: 8px;
-      border: none;
-      padding: 13px;
-      border-radius: 9px;
-      background: linear-gradient(90deg, var(--primary), #8877ff);
-      color: white;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .modal-note {
-      text-align: center;
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 13px;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .pricing-grid {
-        grid-template-columns: repeat(2, 1fr);
+from pathlib import Path
+import zipfile, shutil, re, os
+
+base = Path("/mnt/data/hostinggeer-razorpay-netlify")
+if base.exists():
+    shutil.rmtree(base)
+(base / "netlify" / "functions").mkdir(parents=True)
+
+html = Path("/mnt/data/py_razorpay_integrated.html").read_text(encoding="utf-8")
+
+# Use Netlify Functions as same-site backend.
+html = html.replace(
+    'const BACKEND_URL = "https://YOUR-BACKEND-URL.com";',
+    'const BACKEND_URL = "";'
+)
+html = html.replace(
+    'if (BACKEND_URL.includes("YOUR-BACKEND-URL")) {\n        alert("Payment ke liye backend URL configure karna zaroori hai. BACKEND_URL me apna backend URL daalein.");\n        return;\n      }\n\n',
+    ''
+)
+html = html.replace(
+    'fetch(`${BACKEND_URL}/create-order`',
+    'fetch("/.netlify/functions/create-order"'
+)
+html = html.replace(
+    'fetch(`${BACKEND_URL}/verify-payment`',
+    'fetch("/.netlify/functions/verify-payment"'
+)
+html = html.replace(
+    'Replace BACKEND_URL with your deployed backend URL.\n     * The backend must expose:',
+    'This version uses Netlify Functions as the backend.\n     * Configure Razorpay credentials in Netlify environment variables.\n     * The backend exposes:'
+)
+# Keep only public key ID; user must rotate exposed credentials.
+html = html.replace(
+    'const RAZORPAY_KEY_ID = "rzp_live_Tbv60mhXgOfSX5";',
+    'const RAZORPAY_KEY_ID = "rzp_live_Tbv60mhXgOfSX5";'
+)
+(base / "index.html").write_text(html, encoding="utf-8")
+
+create_order = r'''const Razorpay = require("razorpay");
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
+  }
+
+  try {
+    const body = JSON.parse(event.body || "{}");
+    const amount = Number(body.amount);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Invalid amount" }) };
+    }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+
+    const order = await razorpay.orders.create({
+      amount: Math.round(amount * 100),
+      currency: "INR",
+      receipt: `hg_${Date.now()}`,
+      notes: {
+        plan: String(body.plan || "").slice(0, 100),
+        customer_name: String(body.customer?.name || "").slice(0, 100),
+        customer_email: String(body.customer?.email || "").slice(0, 100)
       }
-    }
+    });
 
-    @media (max-width: 600px) {
-      .container {
-        width: min(100% - 28px, 1180px);
-      }
-
-      nav {
-        height: 68px;
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .hero {
-        padding: 60px 0 50px;
-      }
-
-      .hero h1 {
-        letter-spacing: -1.5px;
-      }
-
-      .hero p {
-        font-size: 14px;
-      }
-
-      .hero-stats {
-        gap: 20px;
-      }
-
-      .pricing-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .pricing-card {
-        padding: 24px;
-      }
-
-      .section-heading h2 {
-        font-size: 26px;
-      }
-
-      .trust-inner {
-        justify-content: center;
-        text-align: center;
-      }
-
-      .trust-items {
-        justify-content: center;
-      }
-
-      .cta h2 {
-        font-size: 25px;
-      }
-
-      .footer-inner {
-        justify-content: center;
-        text-align: center;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- Navbar -->
-  <div class="container">
-    <nav>
-      <a href="#" class="logo">
-        <span class="logo-icon">✦</span>
-        CloudNest
-      </a>
-
-      <div class="nav-links">
-        <a href="#plans">Plans</a>
-        <a href="#features">Features</a>
-        <a href="#support">Support</a>
-        <a href="#plans" class="nav-btn">Get Started →</a>
-      </div>
-    </nav>
-  </div>
-
-  <!-- Hero -->
-  <main>
-    <div class="container">
-      <section class="hero">
-        <div class="eyebrow">
-          <span class="pulse"></span>
-          Reliable cloud infrastructure
-        </div>
-
-        <h1>
-          Power your ideas with<br />
-          <span class="gradient-text">high-performance servers.</span>
-        </h1>
-
-        <p>
-          Deploy faster, scale smarter, and keep your applications running
-          with secure, affordable cloud hosting built for everyone.
-        </p>
-
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <strong>99.9%</strong>
-            <span>Uptime SLA</span>
-          </div>
-          <div class="hero-stat">
-            <strong>24/7</strong>
-            <span>Expert Support</span>
-          </div>
-          <div class="hero-stat">
-            <strong>1-Click</strong>
-            <span>Deployment</span>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- Pricing -->
-    <section class="pricing-section" id="plans">
-      <div class="container">
-        <div class="section-heading">
-          <h2>Choose your perfect server</h2>
-          <p>Simple pricing. Powerful infrastructure. No hidden surprises.</p>
-        </div>
-
-        <div class="billing-toggle">
-          <span>Monthly billing</span>
-          <button class="toggle" id="billingToggle" aria-label="Toggle billing">
-            <span></span>
-          </button>
-          <span>Yearly billing</span>
-          <span class="save-badge">Save up to 20%</span>
-        </div>
-
-        <div class="pricing-grid">
-
-          <!-- Plan 1 -->
-          <article class="pricing-card">
-            <div class="plan-icon">🌱</div>
-            <h3>Starter</h3>
-            <p class="plan-desc">Perfect for personal websites and small projects.</p>
-
-            <div class="price">
-              <span>₹</span>
-              <strong class="monthly-price">500</strong>
-              <span>/month</span>
-            </div>
-            <p class="setup">Free setup included</p>
-
-            <ul class="features">
-              <li>1 vCPU Core</li>
-              <li>1 GB RAM</li>
-              <li>25 GB SSD Storage</li>
-              <li>1 TB Bandwidth</li>
-              <li>1 Free Database · 1 GB</li>
-              <li>Free SSL Certificate</li>
-              <li>Basic DDoS Protection</li>
-            </ul>
-
-            <button class="buy-btn" data-plan="Starter" data-price="₹500/month">
-              Choose Starter →
-            </button>
-          </article>
-
-          <!-- Plan 2 -->
-          <article class="pricing-card">
-            <div class="plan-icon">⚡</div>
-            <h3>Basic</h3>
-            <p class="plan-desc">More power for growing websites and applications.</p>
-
-            <div class="price">
-              <span>₹</span>
-              <strong class="monthly-price">800</strong>
-              <span>/month</span>
-            </div>
-            <p class="setup">Free setup included</p>
-
-            <ul class="features">
-              <li>2 vCPU Cores</li>
-              <li>2 GB RAM</li>
-              <li>50 GB NVMe SSD</li>
-              <li>2 TB Bandwidth</li>
-              <li>1 Free Database · 2 GB</li>
-              <li>Free SSL Certificate</li>
-              <li>Daily Backups</li>
-            </ul>
-
-            <button class="buy-btn" data-plan="Basic" data-price="₹800/month">
-              Choose Basic →
-            </button>
-          </article>
-
-          <!-- Plan 3 -->
-          <article class="pricing-card">
-            <div class="plan-icon">🚀</div>
-            <h3>Growth</h3>
-            <p class="plan-desc">A balanced server for businesses and developers.</p>
-
-            <div class="price">
-              <span>₹</span>
-              <strong class="monthly-price">1,500</strong>
-              <span>/month</span>
-            </div>
-            <p class="setup">Free setup included</p>
-
-            <ul class="features">
-              <li>2 vCPU Cores</li>
-              <li>4 GB RAM</li>
-              <li>80 GB NVMe SSD</li>
-              <li>4 TB Bandwidth</li>
-              <li>1 Free Database · 5 GB</li>
-              <li>Daily Automated Backups</li>
-              <li>Priority Support</li>
-            </ul>
-
-            <button class="buy-btn" data-plan="Growth" data-price="₹1,500/month">
-              Choose Growth →
-            </button>
-          </article>
-
-          <!-- Plan 4 -->
-          <article class="pricing-card featured">
-            <div class="popular">MOST POPULAR</div>
-            <div class="plan-icon">💎</div>
-            <h3>Professional</h3>
-            <p class="plan-desc">Built for serious applications and online businesses.</p>
-
-            <div class="price">
-              <span>₹</span>
-              <strong class="monthly-price">5,000</strong>
-              <span>/month</span>
-            </div>
-            <p class="setup">Free migration + setup</p>
-
-            <ul class="features">
-              <li>4 vCPU Cores</li>
-              <li>8 GB RAM</li>
-              <li>160 GB NVMe SSD</li>
-              <li>8 TB Bandwidth</li>
-              <li>1 Free Database · 15 GB</li>
-              <li>Daily Backups + Snapshots</li>
-              <li>Advanced DDoS Protection</li>
-              <li>Priority 24/7 Support</li>
-            </ul>
-
-            <button class="buy-btn" data-plan="Professional" data-price="₹5,000/month">
-              Choose Professional →
-            </button>
-          </article>
-
-          <!-- Plan 5 -->
-          <article class="pricing-card">
-            <div class="plan-icon">🔥</div>
-            <h3>Business</h3>
-            <p class="plan-desc">High-performance infrastructure for scaling teams.</p>
-
-            <div class="price">
-              <span>₹</span>
-              <strong class="monthly-price">7,000</strong>
-              <span>/month</span>
-            </div>
-            <p class="setup">Free migration + setup</p>
-
-            <ul class="features">
-              <li>6 vCPU Cores</li>
-              <li>16 GB RAM</li>
-              <li>250 GB NVMe SSD</li>
-              <li>12 TB Bandwidth</li>
-              <li>1 Free Database · 25 GB</li>
-              <li>Automated Daily Backups</li>
-              <li>Load Balancing Ready</li>
-              <li>Dedicated Support</li>
-            </ul>
-
-            <button class="buy-btn" data-plan="Business" data-price="₹7,000/month">
-              Choose Business →
-            </button>
-          </article>
-
-          <!-- Plan 6 -->
-          <article class="pricing-card">
-            <div class="plan-icon">👑</div>
-            <h3>Enterprise</h3>
-            <p class="plan-desc">Maximum resources for demanding workloads.</p>
-
-            <div class="price">
-              <span>₹</span>
-              <strong class="monthly-price">9,000</strong>
-              <span>/month</span>
-            </div>
-            <p class="setup">Free migration + priority setup</p>
-
-            <ul class="features">
-              <li>8 vCPU Cores</li>
-              <li>32 GB RAM</li>
-              <li>400 GB NVMe SSD</li>
-              <li>Unlimited* Bandwidth</li>
-              <li>1 Free Database · 50 GB</li>
-              <li>Advanced Backup & Snapshots</li>
-              <li>Dedicated IP Included</li>
-              <li>Premium 24/7 Support</li>
-            </ul>
-
-            <button class="buy-btn" data-plan="Enterprise" data-price="₹9,000/month">
-              Choose Enterprise →
-            </button>
-          </article>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- Trust bar -->
-    <section class="trust" id="features">
-      <div class="container">
-        <div class="trust-inner">
-          <div class="trust-text">Everything you need to run your business online.</div>
-          <div class="trust-items">
-            <span>✓ NVMe Storage</span>
-            <span>✓ Free SSL</span>
-            <span>✓ DDoS Protection</span>
-            <span>✓ Daily Backups</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <div class="container" id="support">
-      <section class="cta">
-        <h2>Need a custom server?</h2>
-        <p>
-          Get a tailored infrastructure plan for your unique application,
-          traffic, and performance requirements.
-        </p>
-        <a href="mailto:support@cloudnest.com" class="cta-btn">
-          Talk to our experts →
-        </a>
-      </section>
-    </div>
-  </main>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="footer-inner">
-        <div>© 2026 CloudNest. All rights reserved.</div>
-        <div class="footer-links">
-          <a href="#">Terms</a>
-          <a href="#">Privacy</a>
-          <a href="mailto:support@cloudnest.com">Contact</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Buy Modal -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <button class="modal-close" id="modalClose">×</button>
-
-      <h3>Get your server</h3>
-      <p class="modal-subtitle">
-        Fill in your details and our team will contact you.
-      </p>
-
-      <div class="selected-plan" id="selectedPlan">
-        Selected plan: <strong>Starter</strong>
-      </div>
-
-      <form id="orderForm">
-        <div class="form-group">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" placeholder="Enter your name" required />
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" placeholder="you@example.com" required />
-        </div>
-
-        <div class="form-group">
-          <label for="phone">WhatsApp / Phone</label>
-          <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX" required />
-        </div>
-
-        <div class="form-group">
-          <label for="os">Preferred Server OS</label>
-          <select id="os">
-            <option>Ubuntu Linux</option>
-            <option>Windows Server</option>
-            <option>Debian Linux</option>
-            <option>CentOS / AlmaLinux</option>
-          </select>
-        </div>
-
-        <button type="submit" class="submit-btn">
-          Submit Request →
-        </button>
-
-        <p class="modal-note">
-          No payment is collected here. Our team will confirm your order.
-        </p>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    // Pricing plans
-    const plans = {
-      "Starter": 500,
-      "Basic": 800,
-      "Growth": 1500,
-      "Professional": 5000,
-      "Business": 7000,
-      "Enterprise": 9000
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: order.id,
+        amount: order.amount,
+        currency: order.currency
+      })
     };
+  } catch (error) {
+    console.error("Create order error:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Unable to create Razorpay order" })
+    };
+  }
+};
+'''
+(base / "netlify" / "functions" / "create-order.js").write_text(create_order, encoding="utf-8")
 
-    // Modal elements
-    const modalOverlay = document.getElementById("modalOverlay");
-    const modalClose = document.getElementById("modalClose");
-    const selectedPlan = document.getElementById("selectedPlan");
-    const orderForm = document.getElementById("orderForm");
+verify_payment = r'''const crypto = require("crypto");
 
-    let selectedPlanName = "";
-    let selectedPlanPrice = "";
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
+  }
 
-    // Open modal when Buy button is clicked
-    document.querySelectorAll(".buy-btn").forEach(button => {
-      button.addEventListener("click", () => {
-        selectedPlanName = button.dataset.plan;
-        selectedPlanPrice = button.dataset.price;
+  try {
+    const body = JSON.parse(event.body || "");
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
 
-        selectedPlan.innerHTML =
-          `Selected plan: <strong>${selectedPlanName}</strong>
-           <span style="color:#9ba7bd"> — ${selectedPlanPrice}</span>`;
-
-        modalOverlay.classList.add("active");
-        document.body.style.overflow = "hidden";
-      });
-    });
-
-    // Close modal
-    function closeModal() {
-      modalOverlay.classList.remove("active");
-      document.body.style.overflow = "";
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return { statusCode: 400, body: JSON.stringify({ success: false, error: "Missing payment fields" }) };
     }
 
-    modalClose.addEventListener("click", closeModal);
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
 
-    modalOverlay.addEventListener("click", (event) => {
-      if (event.target === modalOverlay) {
-        closeModal();
-      }
-    });
-
-    // Close with Escape key
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeModal();
-    });
-
-    // Submit order form
-    orderForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const phone = document.getElementById("phone").value;
-      const os = document.getElementById("os").value;
-
-      // Demo behavior: replace this with your backend API
-      alert(
-        `Thank you, ${name}!\n\n` +
-        `Plan: ${selectedPlanName}\n` +
-        `Price: ${selectedPlanPrice}\n` +
-        `Email: ${email}\n` +
-        `Phone: ${phone}\n` +
-        `OS: ${os}\n\n` +
-        `Our team will contact you shortly.`
+    const valid =
+      expectedSignature.length === razorpay_signature.length &&
+      crypto.timingSafeEqual(
+        Buffer.from(expectedSignature),
+        Buffer.from(razorpay_signature)
       );
 
-      orderForm.reset();
-      closeModal();
-    });
+    if (!valid) {
+      return { statusCode: 400, body: JSON.stringify({ success: false, error: "Invalid signature" }) };
+    }
 
-    // Billing toggle: yearly discount demo
-    const billingToggle = document.getElementById("billingToggle");
-    let yearly = false;
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ success: true, payment_id: razorpay_payment_id })
+    };
+  } catch (error) {
+    console.error("Verify payment error:", error);
+    return { statusCode: 500, body: JSON.stringify({ success: false, error: "Verification failed" }) };
+  }
+};
+'''
+(base / "netlify" / "functions" / "verify-payment.js").write_text(verify_payment, encoding="utf-8")
 
-    billingToggle.addEventListener("click", () => {
-      yearly = !yearly;
+package_json = '''{
+  "name": "hostinggeer-razorpay-netlify",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "razorpay": "^2.9.6"
+  }
+}
+'''
+(base / "package.json").write_text(package_json, encoding="utf-8")
 
-      billingToggle.style.justifyContent = yearly ? "flex-start" : "flex-end";
+netlify_toml = '''[build]
+  publish = "."
+  functions = "netlify/functions"
 
-      document.querySelectorAll(".monthly-price").forEach(priceEl => {
-        const originalText = priceEl.textContent.replace(",", "");
-        const monthly = Number(originalText);
+[functions]
+  node_bundler = "esbuild"
+'''
+(base / "netlify.toml").write_text(netlify_toml, encoding="utf-8")
 
-        if (yearly) {
-          const discounted = Math.round(monthly * 12 * 0.80);
-          priceEl.textContent = discounted.toLocaleString("en-IN");
-          priceEl.nextElementSibling.textContent = "/year";
-        } else {
-          priceEl.textContent = monthly.toLocaleString("en-IN");
-          priceEl.nextElementSibling.textContent = "/month";
-        }
-      });
-    });
-  </script>
+readme = '''# HostingGeer + Razorpay Live Integration
 
-</body>
-</html>
+## Netlify setup
+
+1. Deploy this folder/repository to Netlify.
+2. In Netlify: Site configuration -> Environment variables, add:
+   - `RAZORPAY_KEY_ID` = your NEW live Key ID
+   - `RAZORPAY_KEY_SECRET` = your live Key Secret
+3. Trigger a new deploy.
+4. Do not put `RAZORPAY_KEY_SECRET` in `index.html` or GitHub.
+
+The frontend uses `/.netlify/functions/create-order` and
+`/.netlify/functions/verify-payment`.
+
+IMPORTANT: The live credential previously shared in chat should be revoked/rotated
+before going live.
+'''
+(base / "README.md").write_text(readme, encoding="utf-8")
+
+zip_path = Path("/mnt/data/hostinggeer-razorpay-netlify.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+    for p in base.rglob("*"):
+        if p.is_file():
+            z.write(p, p.relative_to(base))
+
+print(f"Created complete deployable project: {zip_path}")
+print("Included index.html, Netlify Functions for order creation and signature verification, package.json, netlify.toml, and README.")

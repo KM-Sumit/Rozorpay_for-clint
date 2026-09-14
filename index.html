@@ -12,7 +12,6 @@
     :root {
       --bg: #070b16;
       --card: #111827;
-      --card-light: #172033;
       --text: #f8fafc;
       --muted: #94a3b8;
       --primary: #6366f1;
@@ -193,7 +192,11 @@
       display: flex;
       flex-direction: column;
       padding: 30px 25px 25px;
-      background: linear-gradient(180deg, rgba(23, 32, 51, 0.96), rgba(17, 24, 39, 0.96));
+      background: linear-gradient(
+        180deg,
+        rgba(23, 32, 51, 0.96),
+        rgba(17, 24, 39, 0.96)
+      );
       border: 1px solid var(--border);
       border-radius: 22px;
       transition: 0.25s ease;
@@ -208,8 +211,9 @@
 
     .plan.featured {
       border: 1px solid #6366f1;
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.12),
-                  0 20px 60px rgba(79, 70, 229, 0.12);
+      box-shadow:
+        0 0 0 1px rgba(99, 102, 241, 0.12),
+        0 20px 60px rgba(79, 70, 229, 0.12);
     }
 
     .popular {
@@ -444,6 +448,7 @@
       color: #64748b;
       font-size: 11px;
       margin-top: 15px;
+      line-height: 1.6;
     }
 
     .success-box {
@@ -510,7 +515,6 @@
 </head>
 
 <body>
-
   <div class="container">
     <nav>
       <a href="#" class="logo">
@@ -538,8 +542,8 @@
       </h1>
 
       <p>
-        Launch your website with fast, secure and reliable hosting.
-        Choose a plan that fits your business and scale whenever you need.
+        Launch your website with fast, reliable and flexible hosting.
+        Choose a plan that fits your business.
       </p>
 
       <div class="trust-row">
@@ -557,7 +561,6 @@
       </div>
 
       <div class="plans">
-
         <article class="plan">
           <div class="plan-icon">🚀</div>
           <h3>Starter</h3>
@@ -571,10 +574,8 @@
             <span class="period">/month</span>
           </div>
 
-          <button
-            class="buy-btn"
-            onclick="openPaymentModal('Starter Hosting Plan', 500)"
-          >
+          <button class="buy-btn"
+            onclick="openPaymentModal('Starter Hosting Plan', 500)">
             Buy Starter
           </button>
 
@@ -602,10 +603,8 @@
             <span class="period">/month</span>
           </div>
 
-          <button
-            class="buy-btn"
-            onclick="openPaymentModal('Professional Hosting Plan', 1500)"
-          >
+          <button class="buy-btn"
+            onclick="openPaymentModal('Professional Hosting Plan', 1500)">
             Buy Professional
           </button>
 
@@ -624,7 +623,7 @@
           <div class="plan-icon">🏢</div>
           <h3>Business</h3>
           <p class="plan-description">
-            High-performance hosting for serious business workloads.
+            High-performance hosting for business workloads.
           </p>
 
           <div class="price">
@@ -633,10 +632,8 @@
             <span class="period">/month</span>
           </div>
 
-          <button
-            class="buy-btn"
-            onclick="openPaymentModal('Business Hosting Plan', 5000)"
-          >
+          <button class="buy-btn"
+            onclick="openPaymentModal('Business Hosting Plan', 5000)">
             Buy Business
           </button>
 
@@ -655,7 +652,7 @@
           <div class="plan-icon">💎</div>
           <h3>Enterprise</h3>
           <p class="plan-description">
-            Dedicated resources and premium support for large projects.
+            Dedicated resources and premium support.
           </p>
 
           <div class="price">
@@ -664,10 +661,8 @@
             <span class="period">/month</span>
           </div>
 
-          <button
-            class="buy-btn"
-            onclick="openPaymentModal('Enterprise Hosting Plan', 9000)"
-          >
+          <button class="buy-btn"
+            onclick="openPaymentModal('Enterprise Hosting Plan', 9000)">
             Buy Enterprise
           </button>
 
@@ -695,10 +690,8 @@
             <span class="period">/month</span>
           </div>
 
-          <button
-            class="buy-btn"
-            onclick="openPaymentModal('Scale Hosting Plan', 7000)"
-          >
+          <button class="buy-btn"
+            onclick="openPaymentModal('Scale Hosting Plan', 7000)">
             Buy Scale
           </button>
 
@@ -717,7 +710,7 @@
           <div class="plan-icon">🔥</div>
           <h3>Ultimate</h3>
           <p class="plan-description">
-            Maximum power for demanding production applications.
+            Maximum power for demanding applications.
           </p>
 
           <div class="price">
@@ -726,10 +719,8 @@
             <span class="period">/month</span>
           </div>
 
-          <button
-            class="buy-btn"
-            onclick="openPaymentModal('Ultimate Hosting Plan', 12000)"
-          >
+          <button class="buy-btn"
+            onclick="openPaymentModal('Ultimate Hosting Plan', 12000)">
             Buy Ultimate
           </button>
 
@@ -743,13 +734,12 @@
             <li>24/7 premium support</li>
           </ul>
         </article>
-
       </div>
     </section>
 
     <div class="bottom-note" id="contact">
       © 2026 Hostinggeer. All rights reserved.<br />
-      Payments are processed securely through Razorpay.
+      Payments are processed through Razorpay.
     </div>
   </div>
 
@@ -763,7 +753,7 @@
 
       <div class="selected-plan">
         <small>Selected plan</small>
-        <strong id="selectedPlanName">Starter Plan</strong>
+        <strong id="selectedPlanName">Starter Hosting Plan</strong>
         <div id="selectedPlanPrice">₹500/month</div>
       </div>
 
@@ -805,7 +795,8 @@
       </form>
 
       <div class="secure-note">
-        You will be redirected to Razorpay's secure checkout.
+        Razorpay checkout will show available payment methods such as
+        UPI, Cards, Netbanking and Wallets.
       </div>
 
       <div class="success-box" id="successBox"></div>
@@ -814,13 +805,8 @@
 
   <script>
     /*
-      IMPORTANT:
-      Replace this with your NEW Razorpay LIVE PUBLIC KEY ID.
-
-      Example:
-      rzp_live_xxxxxxxxxxxxxx
-
-      Never put Razorpay Secret Key here.
+      Razorpay LIVE PUBLIC KEY ID
+      Your previously provided public key is added here.
     */
     const RAZORPAY_KEY_ID = "rzp_live_Tbv60mhXgOfSX5";
 
@@ -834,6 +820,7 @@
       selectedPlan.amount = amount;
 
       document.getElementById("selectedPlanName").textContent = planName;
+
       document.getElementById("selectedPlanPrice").textContent =
         "₹" + amount.toLocaleString("en-IN") + "/month";
 
@@ -845,103 +832,155 @@
       document.getElementById("paymentModal").classList.remove("active");
     }
 
-    document.getElementById("paymentModal").addEventListener("click", function(e) {
-      if (e.target === this) {
-        closePaymentModal();
-      }
-    });
+    document
+      .getElementById("paymentModal")
+      .addEventListener("click", function (event) {
+        if (event.target === this) {
+          closePaymentModal();
+        }
+      });
 
-    document.getElementById("paymentForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+    document
+      .getElementById("paymentForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
 
-      if (
-        !RAZORPAY_KEY_ID ||
-        RAZORPAY_KEY_ID.includes("NEW_PUBLIC_KEY_ID")
-      ) {
-        alert("Please add your Razorpay Live Public Key ID in the HTML code.");
-        return;
-      }
+        const name = document
+          .getElementById("customerName")
+          .value
+          .trim();
 
-      const name = document.getElementById("customerName").value.trim();
-      const email = document.getElementById("customerEmail").value.trim();
-      const phone = document.getElementById("customerPhone").value.trim();
-      const continueBtn = document.getElementById("continueBtn");
+        const email = document
+          .getElementById("customerEmail")
+          .value
+          .trim();
 
-      continueBtn.disabled = true;
-      continueBtn.textContent = "Opening Razorpay...";
+        const phone = document
+          .getElementById("customerPhone")
+          .value
+          .trim();
 
-      const options = {
-        key: RAZORPAY_KEY_ID,
+        const continueBtn = document.getElementById("continueBtn");
 
-        // Razorpay amount is in paise
-        amount: selectedPlan.amount * 100,
+        if (!window.Razorpay) {
+          alert(
+            "Razorpay SDK load nahi hua. Internet connection check karke page refresh karein."
+          );
+          return;
+        }
 
-        currency: "INR",
-        name: "Hostinggeer",
-        description: selectedPlan.name,
+        if (!RAZORPAY_KEY_ID.startsWith("rzp_live_")) {
+          alert("Valid Razorpay Live Public Key ID add karein.");
+          return;
+        }
 
-        prefill: {
-          name: name,
-          email: email,
-          contact: phone
-        },
+        continueBtn.disabled = true;
+        continueBtn.textContent = "Opening Razorpay...";
 
-        notes: {
-          plan: selectedPlan.name,
-          customer_name: name,
-          demo: "true"
-        },
+        const options = {
+          key: RAZORPAY_KEY_ID,
 
-        theme: {
-          color: "#6366f1"
-        },
+          // Amount paise mein hota hai
+          amount: selectedPlan.amount * 100,
 
-        handler: function(response) {
-          const successBox = document.getElementById("successBox");
+          currency: "INR",
+          name: "Hostinggeer",
+          description: selectedPlan.name,
 
-          successBox.style.display = "block";
-          successBox.innerHTML = `
-            <strong>Payment Completed</strong><br><br>
-            Payment ID: ${response.razorpay_payment_id || "Received"}<br>
-            Plan: ${selectedPlan.name}<br>
-            Amount: ₹${selectedPlan.amount.toLocaleString("en-IN")}<br><br>
-            <small>
-              Note: This is a frontend demo. Server-side verification
-              should be added before production use.
-            </small>
-          `;
+          image: "",
+
+          prefill: {
+            name: name,
+            email: email,
+            contact: phone
+          },
+
+          notes: {
+            plan: selectedPlan.name,
+            customer_name: name,
+            demo: "client-demo"
+          },
+
+          theme: {
+            color: "#6366f1"
+          },
+
+          // Payment methods ko explicitly enable karne ka attempt
+          config: {
+            display: {
+              blocks: {
+                banks: {
+                  name: "Pay using UPI / Cards / Netbanking",
+                  instruments: [
+                    {
+                      method: "upi"
+                    },
+                    {
+                      method: "card"
+                    },
+                    {
+                      method: "netbanking"
+                    },
+                    {
+                      method: "wallet"
+                    }
+                  ]
+                }
+              },
+              sequence: ["block.banks"],
+              preferences: {
+                show_default_blocks: true
+              }
+            }
+          },
+
+          handler: function (response) {
+            const successBox = document.getElementById("successBox");
+
+            successBox.style.display = "block";
+
+            successBox.innerHTML = `
+              <strong>Payment Completed</strong><br><br>
+              Payment ID:
+              ${response.razorpay_payment_id || "Received"}<br>
+              Plan: ${selectedPlan.name}<br>
+              Amount: ₹${selectedPlan.amount.toLocaleString("en-IN")}<br><br>
+              <small>
+                Payment response received. Server-side verification
+                should be added before production.
+              </small>
+            `;
+
+            continueBtn.disabled = false;
+            continueBtn.textContent = "Continue to Payment";
+
+            console.log("Razorpay payment response:", response);
+          },
+
+          modal: {
+            ondismiss: function () {
+              continueBtn.disabled = false;
+              continueBtn.textContent = "Continue to Payment";
+            }
+          }
+        };
+
+        const razorpay = new Razorpay(options);
+
+        razorpay.on("payment.failed", function (response) {
+          alert(
+            "Payment failed.\n\n" +
+            (response.error.description || "Please try again.")
+          );
+
+          console.error("Payment failed:", response.error);
 
           continueBtn.disabled = false;
           continueBtn.textContent = "Continue to Payment";
+        });
 
-          console.log("Razorpay payment response:", response);
-        },
-
-        modal: {
-          ondismiss: function() {
-            continueBtn.disabled = false;
-            continueBtn.textContent = "Continue to Payment";
-          }
-        }
-      };
-
-      const razorpay = new Razorpay(options);
-
-      razorpay.on("payment.failed", function(response) {
-        alert(
-          "Payment failed.\n\n" +
-          (response.error.description || "Please try again.")
-        );
-
-        console.error("Payment failed:", response.error);
-
-        continueBtn.disabled = false;
-        continueBtn.textContent = "Continue to Payment";
+        razorpay.open();
       });
-
-      razorpay.open();
-    });
   </script>
-
 </body>
 </html>
